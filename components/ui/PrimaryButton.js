@@ -1,6 +1,6 @@
 import React from "react"
 import { Text,View,Pressable,StyleSheet } from "react-native"
-import Colors from "../constants/colors"
+import Colors from "../../constants/colors"
 
 function PrimaryButton({ children, onPress }) { //we have to call props and then props.children, but we just use destructuring
     
