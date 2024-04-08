@@ -1,6 +1,10 @@
 import React,{ useState } from 'react';
 import { StyleSheet,ImageBackground,SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font'
+import AppLoading from 'expo-app-loading'
+import * as SplashScreen from 'expo-splash-screen'
+
 import StartGameScreen from './screens/StartGameScreen';
 import GameScreen from './screens/GameScreen';
 import Colors from './constants/colors';
@@ -9,14 +13,39 @@ import GameOverScreen from './screens/GameOverScreen';
 export default function App() {
   const [userNumber,setUserNumber] = useState(null)
   const [gameIsOver,setGameIsOver] = useState(true)
+  const [numberRounds,setNumberRounds] = useState(0)
+
+  SplashScreen.preventAutoHideAsync();
+
+  const [fontsLoaded] = useFonts({
+    // @ts-ignore
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    // @ts-ignore
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+  })
+
+  if (!fontsLoaded) {
+    return <AppLoading />
+  } else {
+    SplashScreen.hideAsync(); // Hide the splash screen once the fonts are loaded
+  }
+
 
   function pickedNumberHandler(pickedNumber) {
     setUserNumber(pickedNumber)
     setGameIsOver(false)
   }
 
-  function gameOverHandler(arams) {
+  // @ts-ignore
+  function gameOverHandler(numberOfRounds) {
     setGameIsOver(true)
+    setNumberRounds(numberOfRounds)
+  }
+
+  function startNewGameHandler() {
+    setUserNumber(null)
+    setGameIsOver(false)
+    setNumberRounds(0)
   }
 
   let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />
@@ -26,7 +55,7 @@ export default function App() {
   }
 
   if (gameIsOver && userNumber) {
-    screen = <GameOverScreen />
+    screen = <GameOverScreen userNumber={userNumber} roundsNumber={numberRounds} onStartNewGame={startNewGameHandler} />
   }
 
 
@@ -36,6 +65,7 @@ export default function App() {
       style={styles.rootScreen}
     >
       <ImageBackground
+        // @ts-ignore
         source={require('./assets/images/background.png')}
         resizeMode="cover"
         style={styles.rootScreen}
